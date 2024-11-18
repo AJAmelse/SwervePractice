@@ -4,53 +4,86 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
-  private final XboxController m_controller = new XboxController(0);
-  private final Drivetrain m_swerve = new Drivetrain();
+  private static Robot instance;
+  private Command m_autonomousCommand;
+  private RobotContainer m_robotContainer;
+  private Timer disabledTimer;
 
-  // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
-  private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(3);
-  private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(3);
-  private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
+  public Robot()
+  {
+    instance = this;
+  }
+
+  public static Robot getInstance()
+  {
+    return instance;
+  }
+
+   @Override
+  public void robotInit()
+  {
+    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
+    // autonomous chooser on the dashboard.
+    m_robotContainer = new RobotContainer();
+
+    CameraServer.startAutomaticCapture();
+    // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
+    // immediately when disabled, but then also let it be pushed more 
+    disabledTimer = new Timer();
+  }
+
+  @Override
+  public void robotPeriodic()
+  {
+    CommandScheduler.getInstance().run();
+  }
+
+  @Override
+  public void autonomousInit()
+  {
+   // m_robotContainer.setMotorBrake(true);
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+    // schedule the autonomous command (example)
+    if (m_autonomousCommand != null)
+    {
+      m_autonomousCommand.schedule();
+    }
+  }
 
   @Override
   public void autonomousPeriodic() {
-    driveWithJoystick(false);
-    m_swerve.updateOdometry();
+    
+  }
+
+  @Override
+  public void teleopInit()
+  {
+    // This makes sure that the autonomous stops running when
+    // teleop starts running. If you want the autonomous to
+    // continue until interrupted by another command, remove
+    // this line or comment it out.
+    if (m_autonomousCommand != null)
+    {
+      m_autonomousCommand.cancel();
+    }
+    m_robotContainer.setDriveMode();
+    //m_robotContainer.setMotorBrake(true);
   }
 
   @Override
   public void teleopPeriodic() {
-    driveWithJoystick(true);
   }
 
-  private void driveWithJoystick(boolean fieldRelative) {
-    // Get the x speed. We are inverting this because Xbox controllers return
-    // negative values when we push forward.
-    final var xSpeed =
-        -m_xspeedLimiter.calculate(MathUtil.applyDeadband(m_controller.getLeftY(), 0.02))
-            * Drivetrain.kMaxSpeed;
 
-    // Get the y speed or sideways/strafe speed. We are inverting this because
-    // we want a positive value when we pull to the left. Xbox controllers
-    // return positive values when you pull to the right by default.
-    final var ySpeed =
-        -m_yspeedLimiter.calculate(MathUtil.applyDeadband(m_controller.getLeftX(), 0.02))
-            * Drivetrain.kMaxSpeed;
-
-    // Get the rate of angular rotation. We are inverting this because we want a
-    // positive value when we pull to the left (remember, CCW is positive in
-    // mathematics). Xbox controllers return positive values when you pull to
-    // the right by default.
-    final var rot =
-        -m_rotLimiter.calculate(MathUtil.applyDeadband(m_controller.getRightX(), 0.02))
-            * Drivetrain.kMaxAngularSpeed;
-
-    m_swerve.drive(xSpeed, ySpeed, rot, fieldRelative, getPeriod());
-  }
 }
