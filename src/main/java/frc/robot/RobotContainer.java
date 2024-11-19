@@ -8,8 +8,7 @@ public class RobotContainer {
     private final XboxController m_controller = new XboxController(0);
     private final Drivetrain m_swerve = new Drivetrain();
     
-    public RobotContainer()
-    {
+    public RobotContainer(){
 
     }
 
