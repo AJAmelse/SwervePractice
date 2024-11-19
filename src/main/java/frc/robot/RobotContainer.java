@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public class RobotContainer {
-    private final XboxController m_controller = new XboxController(0);
+    private final XboxController m_driveController = new XboxController(0);
     private final Drivetrain m_swerve = new Drivetrain();
     
     public RobotContainer(){
