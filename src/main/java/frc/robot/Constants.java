@@ -2,8 +2,8 @@ package frc.robot;
 
 public class Constants {
     public class DrivetrainConstants{
-        public static double k_frontLeftX = 0.35;
-        public static double k_frontLeftY = 0.35;
+        public static double k_frontLeftX = 0.38;
+        public static double k_frontLeftY = 0.38;
 
         public static double k_frontRightX = 0.38;
         public static double k_frontRightY = -0.38;

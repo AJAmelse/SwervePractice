@@ -50,10 +50,8 @@ public class SwerveModule {
    *
    * @param driveMotorChannel PWM output for the drive motor.
    * @param turningMotorChannel PWM output for the turning motor.
-   * @param driveEncoderChannelA DIO input for the drive encoder channel A
-   * @param driveEncoderChannelB DIO input for the drive encoder channel B
-   * @param turningEncoderChannelA DIO input for the turning encoder channel A
-   * @param turningEncoderChannelB DIO input for the turning encoder channel B
+   * @param driveEncoderChannel Analog input for the drive encoder channel
+   * @param turningEncoderChannel Analog input for the turning encoder channel
    */
   public SwerveModule(
       int driveMotorChannel,
